@@ -23,6 +23,6 @@ router.get("/edit/:id", isAdmin, getEditProductPage);
 router.post("/update/:id", isAdmin, updateProduct);
 
 // Delete product
-router.get("/delete/:id", isAdmin, deleteProduct);
+router.post("/delete/:id", isAdmin, deleteProduct);
 
 module.exports = router;

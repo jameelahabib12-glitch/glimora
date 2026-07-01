@@ -1,21 +1,36 @@
 ﻿const mongoose = require("mongoose");
 
-let isConnected = false;
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = {
+    conn: null,
+    promise: null
+  };
+}
 
 async function connectDB() {
-    if (isConnected) {
-        return;
-    }
 
-    if (!process.env.MONGO_URI) {
-        throw new Error("MONGO_URI is missing");
-    }
+  if (cached.conn) {
+    console.log("Using existing MongoDB connection");
+    return cached.conn;
+  }
 
-    await mongoose.connect(process.env.MONGO_URI);
+  if (!cached.promise) {
 
-    isConnected = true;
+    console.log("Connecting to MongoDB...");
 
-    console.log("✅ MongoDB Connected");
+    cached.promise = mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 15000
+    });
+
+  }
+
+  cached.conn = await cached.promise;
+
+  console.log("MongoDB Connected Successfully");
+
+  return cached.conn;
 }
 
 module.exports = connectDB;
