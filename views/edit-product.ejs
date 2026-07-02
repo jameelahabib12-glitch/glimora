@@ -56,7 +56,8 @@
                     Edit Product
                 </h2>
 
-                <form action="/api/products/update/<%= product._id %>" method="POST">
+                <form action="/api/products/<%= product._id %>" method="POST">
+                    <input type="hidden" name="_method" value="PUT">
 
                     <!-- Product Name -->
                     <div class="mb-3">

@@ -66,11 +66,12 @@ body{font-family:Poppins;background:#fffdfd;}
 
             <% const total = item.product.price * item.quantity; %>
             <% grandTotal += total; %>
+            <% const productImage = item.product.images && item.product.images.length > 0 ? item.product.images[0] : "images/no-image.png"; %>
 
             <tr>
 
                 <td>
-                    <img src="/<%= item.product.image %>">
+                    <img src="/<%= productImage %>" alt="<%= item.product.name %>" class="me-2">
                     <%= item.product.name %>
                 </td>
 
@@ -108,13 +109,14 @@ body{font-family:Poppins;background:#fffdfd;}
 
 <% if (cartItems.length > 0) { %>
 
-    <% let finalTotal = 0; %>
-
+    <% let grandTotal = 0; %>
     <% cartItems.forEach(item => { %>
-        <% finalTotal += item.product.price * item.quantity; %>
+        <% if (item.product) { %>
+            <% grandTotal += item.product.price * item.quantity; %>
+        <% } %>
     <% }) %>
 
-    <h4>Total: Rs. <%= finalTotal %></h4>
+    <h4>Total: Rs. <%= grandTotal %></h4>
 
     <a href="/checkout" class="btn btn-custom px-4 py-2 mt-2">
         Checkout

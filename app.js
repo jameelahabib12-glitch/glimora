@@ -36,15 +36,28 @@ app.use((req,res,next)=>{
 
 });
 
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use((req, res, next) => {
+    if (req.body && typeof req.body === "object" && req.body._method) {
+        req.method = req.body._method.toUpperCase();
+    }
+    next();
+});
 app.use(session({
 
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "glimora-session-secret",
 
     resave:false,
 
-    saveUninitialized:false
+    saveUninitialized:false,
+
+    proxy: true,
+
+    cookie: {
+        secure: process.env.NODE_ENV === "production"
+    }
 
 }));
 
@@ -371,10 +384,17 @@ app.get("/cart", async (req, res) => {
     try {
 
         const cartItems = await Cart.find().populate("product");
+        const invalidItemIds = cartItems
+            .filter(item => !item.product)
+            .map(item => item._id);
 
-        console.log(cartItems);
+        if (invalidItemIds.length > 0) {
+            await Cart.deleteMany({ _id: { $in: invalidItemIds } });
+        }
 
-        res.render("cart", { cartItems });
+        const validCartItems = cartItems.filter(item => item.product);
+
+        res.render("cart", { cartItems: validCartItems });
 
     } catch (err) {
         console.log(err);

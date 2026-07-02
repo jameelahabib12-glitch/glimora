@@ -10,19 +10,19 @@ const {
     deleteProduct
 } = require("../controllers/productController");
 
-// Products page
+// List products page
 router.get("/", getAllProductsPage);
 
-// Add product
-router.post("/add", isAdmin, createProduct);
+// Create product
+router.post("/", isAdmin, createProduct);
 
-// Edit page
-router.get("/edit/:id", isAdmin, getEditProductPage);
+// Edit product page
+router.get("/:id/edit", isAdmin, getEditProductPage);
 
 // Update product
-router.post("/update/:id", isAdmin, updateProduct);
+router.put("/:id", isAdmin, updateProduct);
 
 // Delete product
-router.post("/delete/:id", isAdmin, deleteProduct);
+router.delete("/:id", isAdmin, deleteProduct);
 
 module.exports = router;
